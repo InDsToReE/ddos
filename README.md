@@ -1,6 +1,7 @@
 # DDoS Testing Tool
 
-[🇮🇩 Bahasa Indonesia](#bahasa-indonesia) | [🇺🇸 English](#english)
+[🇮🇩 Bahasa Indonesia](#bahasa-indonesia) | [🇺🇸 English](#english) | jp Japan](#Japan)
+
 
 ---
 
