@@ -26,8 +26,7 @@ Tool ini dibuat untuk membantu kalian melakukan ddos ke websites tidak penting s
 ```
 ddos/
 ├── app.py              # Tool DDoS utama
-├── DummyServer/
-│   └── app.js          # Server dummy untuk testing
+│── app.js          # Server dummy untuk testing
 └── README.md           # Dokumentasi ini
 ```
 
@@ -62,7 +61,7 @@ npm --version
 ### 4. Clone Repository
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/ddos.git
+git clone https://github.com/InDsToReE/ddos.git
 cd ddos
 ```
 
@@ -74,8 +73,6 @@ pip install requests colorama psutil
 
 ### 6. Install Dependencies Node.js
 ```bash
-# Masuk ke folder DummyServer
-cd DummyServer
 
 # Install express
 npm init -y
@@ -89,8 +86,6 @@ cd ..
 
 ### Menjalankan Dummy Server (Testing Lokal)
 ```bash
-# Masuk ke folder DummyServer
-cd DummyServer
 
 # Jalankan server
 node app.js
@@ -110,7 +105,7 @@ python app.py
 
 ### Contoh Penggunaan
 1. **Testing Lokal:**
-   - Jalankan `node DummyServer/app.js` di terminal pertama
+   - Jalankan `node app.js` di terminal pertama
    - Jalankan `python app.py` di terminal kedua
    - Target URL: `http://localhost:3000`
 
@@ -226,8 +221,7 @@ This tool is made to help you perform DDoS to unimportant websites like Judol.
 ```
 ddos/
 ├── app.py              # Main DDoS tool
-├── DummyServer/
-│   └── app.js          # Dummy server for testing
+|── app.js          # Dummy server for testing
 └── README.md           # This documentation
 ```
 
@@ -262,7 +256,7 @@ npm --version
 ### 4. Clone Repository
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/ddos.git
+git clone https://github.com/InDsToReE/ddos.git
 cd ddos
 ```
 
@@ -274,8 +268,6 @@ pip install requests colorama psutil
 
 ### 6. Install Node.js Dependencies
 ```bash
-# Enter DummyServer folder
-cd DummyServer
 
 # Install express
 npm init -y
@@ -289,8 +281,6 @@ cd ..
 
 ### Running Dummy Server (Local Testing)
 ```bash
-# Enter DummyServer folder
-cd DummyServer
 
 # Run server
 node app.js
@@ -310,7 +300,7 @@ python app.py
 
 ### Usage Examples
 1. **Local Testing:**
-   - Run `node DummyServer/app.js` in first terminal
+   - Run `node app.js` in first terminal
    - Run `python app.py` in second terminal
    - Target URL: `http://localhost:3000`
 
@@ -406,9 +396,9 @@ This project uses MIT license. See `LICENSE` file for details.
 
 ## 🚨 Legal Notice / Pemberitahuan Hukum
 
-**English**: This tool is strictly for educational and authorized testing purposes only. Any misuse of this tool for illegal activities is prohibited and not the responsibility of the author.
+**English**: This tool is made to help you perform DDoS to unimportant websites like Judol.
 
-**Indonesia**: Tool ini hanya untuk tujuan edukasi dan testing yang diotorisasi. Segala penyalahgunaan tool ini untuk aktivitas ilegal dilarang dan bukan tanggung jawab pembuat.
+**Indonesia**: Alat ini dibuat untuk membantu Anda melakukan DDoS ke situs web yang tidak penting seperti Judol.
 
 ---
 
