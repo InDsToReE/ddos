@@ -10,7 +10,7 @@
 Tool untuk melakukan stress testing dan load testing pada server web. Tool ini dilengkapi dengan dummy server untuk keperluan testing lokal dan fitur visualisasi yang menarik.
 
 ### ⚠️ Disclaimer
-Tool ini dibuat untuk tujuan **edukasi dan testing** saja. Penggunaan untuk menyerang server tanpa izin adalah **ilegal**. Pengguna bertanggung jawab penuh atas penggunaan tool ini.
+Tool ini dibuat untuk membantu kalian melakukan ddos ke websites tidak penting seperti judol
 
 ### 🎯 Fitur
 - ✨ Animasi Matrix dengan logo RizzDevs
@@ -35,7 +35,7 @@ ddos/
 
 ### 1. Instalasi Termux (Android)
 ```bash
-# Download Termux dari F-Droid atau Google Play Store
+# Download Termux dari F-Droid
 # Buka Termux dan update package
 pkg update && pkg upgrade -y
 ```
@@ -210,7 +210,7 @@ Project ini menggunakan lisensi MIT. Lihat file `LICENSE` untuk detail.
 A tool for performing stress testing and load testing on web servers. This tool comes with a dummy server for local testing purposes and attractive visualization features.
 
 ### ⚠️ Disclaimer
-This tool is created for **educational and testing purposes** only. Using it to attack servers without permission is **illegal**. Users are fully responsible for the use of this tool.
+This tool is made to help you perform DDoS to unimportant websites like Judol.
 
 ### 🎯 Features
 - ✨ Matrix animation with RizzDevs logo
@@ -235,7 +235,7 @@ ddos/
 
 ### 1. Install Termux (Android)
 ```bash
-# Download Termux from F-Droid or Google Play Store
+# Download Termux from F-Droid
 # Open Termux and update packages
 pkg update && pkg upgrade -y
 ```
