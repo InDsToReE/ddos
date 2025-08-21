@@ -195,7 +195,7 @@ Project ini menggunakan lisensi MIT. Lihat file `LICENSE` untuk detail.
 ## 📞 Kontak
 - **Author**: Riski Ardiane
 - **Email**: riskiardiane@gmail.com
-- **GitHub**: [@riskiardiane](https://github.com/riskiardiane)
+- **GitHub**: [@riskiardiane](https://github.com/InDsToReE)
 
 ---
 
@@ -390,7 +390,7 @@ This project uses MIT license. See `LICENSE` file for details.
 ## 📞 Contact
 - **Author**: Riski Ardiane
 - **Email**: riskiardiane@gmail.com
-- **GitHub**: [@riskiardiane](https://github.com/riskiardiane)
+- **GitHub**: [@riskiardiane](https://github.com/InDsToReE)
 
 ---
 
