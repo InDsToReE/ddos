@@ -423,4 +423,231 @@ If you find this project useful, please give it a star! ⭐
 
 ---
 
+## Japan
+
+# DDoS ツール
+
+## 📋 説明
+
+このツールは、Web サーバーに対するストレステストおよびロードテストを行うためのものです。ローカルテスト用のダミーサーバーや、魅力的な可視化機能が備わっています。
+
+## ⚠️ 免責事項
+
+このツールは、重要ではないウェブサイト（例: 賭博サイトなど）に対して DDoS を行うための学習・研究用の補助ツールとして作成されています。
+
+## 🎯 機能
+
+* ✨ RizzDevs ロゴ付きマトリックスアニメーション
+* 🎨 カラフルで見やすいターミナルインターフェース
+* 📊 サーバーのリアルタイムステータス監視
+* 🌐 自動 IP スプーフィング
+* 📈 詳細な統計レポート
+* 🛑 サーバーダウン時の自動停止
+* 🔄 自動リスタートモード
+* 🖥️ ローカルテスト用のダミーサーバー
+
+## 📁 プロジェクト構成
+
+```
+ddos/
+├── app.py              # メインの DDoS ツール
+│── app.js              # テスト用のダミーサーバー
+└── README.md           # このドキュメント
+```
+
+## 🚀 インストール方法
+
+### 1. Termux のインストール (Android)
+
+```bash
+# F-Droid から Termux をダウンロード
+# Termux を開いてパッケージを更新
+pkg update && pkg upgrade -y
+```
+
+### 2. Python のインストール
+
+```bash
+# Python をインストール
+pkg install python -y
+
+# インストール確認
+python --version
+```
+
+### 3. Node.js のインストール
+
+```bash
+# Node.js をインストール
+pkg install nodejs -y
+
+# インストール確認
+node --version
+npm --version
+```
+
+### 4. リポジトリのクローン
+
+```bash
+# リポジトリをクローン
+git clone https://github.com/InDsToReE/ddos.git
+cd ddos
+```
+
+### 5. Python 依存関係のインストール
+
+```bash
+# 必要なモジュールをインストール
+pip install requests colorama psutil
+```
+
+### 6. Node.js 依存関係のインストール
+
+```bash
+# express をインストール
+npm init -y
+npm install express
+
+# メインフォルダに戻る
+cd ..
+```
+
+## 🛠️ 使用方法
+
+### ダミーサーバーの実行（ローカルテスト）
+
+```bash
+# サーバーを実行
+node app.js
+
+# サーバーは http://localhost:3000 で稼働
+```
+
+### DDoS ツールの実行
+
+```bash
+# メインツールを実行
+python app.py
+
+# ターミナルの指示に従ってください:
+# 1. ターゲット URL を入力 (例: http://localhost:3000)
+# 2. 1〜1000 のリクエスト数/秒を入力
+```
+
+### 使用例
+
+1. **ローカルテスト:**
+
+   * 1つ目のターミナルで `node app.js` を実行
+   * 2つ目のターミナルで `python app.py` を実行
+   * ターゲット URL: `http://localhost:3000`
+
+2. **外部サーバーテスト:**
+
+   * `python app.py` を実行
+   * ターゲット URL: `https://example.com`
+   * **必ず事前に許可を得てください！**
+
+## 📊 ツール機能
+
+### インターフェース機能
+
+* 🎭 起動時のマトリックスアニメーション
+* 🖥️ システムスペック監視
+* 📱 リアルタイムのステータス更新
+* 📈 成功率 / 失敗率のトラッキング
+* 🌍 IP 分布統計
+
+### セキュリティ機能
+
+* 🔒 レート制限 (1〜1000 req/sec)
+* 🛡️ 自動停止保護
+* ⏱️ タイムアウト処理
+* 📝 詳細なログ記録
+
+## ⚙️ 設定
+
+### 調整可能なパラメータ
+
+* **リクエストレート**: 1〜1000 req/sec
+* **タイムアウト**: 1リクエストあたり3秒
+* **自動停止**: サーバーが2秒以上ダウンした場合
+* **IP スプーフィング**: 偽ヘッダーで自動実行
+
+### 環境変数 (オプション)
+
+```bash
+export DDOS_MAX_RATE=1000
+export DDOS_TIMEOUT=3
+export DDOS_AUTO_STOP=2
+```
+
+## 🔧 トラブルシューティング
+
+### エラー: モジュールが見つかりません
+
+```bash
+pip install requests colorama psutil
+```
+
+### エラー: Permission denied
+
+```bash
+chmod +x app.py
+```
+
+### エラー: ポートが使用中
+
+```bash
+# app.js のポートを 3000 から別のポートに変更
+const PORT = 3001;
+```
+
+### エラー: Connection refused
+
+* ターゲット URL が正しく、アクセス可能であることを確認してください
+* ローカルテストの場合、ダミーサーバーが実行されているか確認してください
+
+## 📋 必要環境
+
+### 最低環境
+
+* **OS**: Android (Termux), Linux, macOS, Windows
+* **Python**: 3.6+
+* **Node.js**: 12+
+* **RAM**: 512MB
+* **ストレージ**: 100MB
+
+### 依存関係
+
+* `requests`: HTTP クライアントライブラリ
+* `colorama`: ターミナルカラー
+* `psutil`: システム情報
+* `express`: Web フレームワーク (Node.js)
+
+## 🤝 貢献
+
+コントリビューションは大歓迎です！手順:
+
+1. リポジトリをフォーク
+2. 新しいブランチを作成 (`git checkout -b feature/AmazingFeature`)
+3. 変更をコミット (`git commit -m 'Add some AmazingFeature'`)
+4. ブランチをプッシュ (`git push origin feature/AmazingFeature`)
+5. プルリクエストを作成
+
+## 📄 ライセンス
+
+本プロジェクトは MIT ライセンスを採用しています。詳細は `LICENSE` ファイルをご確認ください。
+
+## 📞 連絡先
+
+* **作者**: Riski Ardiane
+* **メール**: [riskiardiane@gmail.com](mailto:riskiardiane@gmail.com)
+* **GitHub**: [@riskiardiane](https://github.com/InDsToReE)
+
+---
+
+**❤️ Riski Ardiane によって作成されました**
+
+
 **Made with ❤️ by Riski Ardiane**
